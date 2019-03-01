@@ -40,6 +40,22 @@ def my_redirect(request):
     elif request.user.is_superuser == True:
         return redirect('/dashboard/')
 
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Ваш пароль успішно змінено!')
+            return redirect('change_password')
+        else:
+            messages.error(request, 'Будь-ласка, виправте помилкуІ.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'user/change_password.html', {
+        'form': form
+    })
+
 
 # def setMeterDate(request):
 #     if request.method == "POST":
