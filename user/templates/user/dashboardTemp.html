@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'user/main.css' %}">
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-5">
+      <a class="navbar-brand" href="#">Гірпроменерго</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExample04">
+        {% if user.is_authenticated %}
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <!-- <a class="nav-link" href="">{{title}}</a> -->
+            </li>
+            <li class="nav-item">
+              <!-- <a class="nav-link" href="">Історія</a> -->
+            </li>
+          </ul>
+        {% endif %}
+      </div>
+      <div class="navbar-nav">
+        {% if user.is_authenticated %}
+          {% if perms.user.add_street %}
+          <a href="../admin/" class="btn btn-outline-secondary">Admin</a>
+          {% endif %}
+          <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Кабінет</a>
+          <a href="{% url 'exit' %}" class="btn btn-outline-secondary">Вийти</a>
+        {% endif %}
+      </div>
+    </nav>
+    <div class="container-fluid">
+      {% block main_section %}
+      {% endblock %}
+    </div>
+    <div class="container-fluid">
+      {% block content %}
+      {% endblock content %}
+    </div>
+    <div class="container-fluid">
+      {% if messages %}
+        {% for mess in messages %}
+          <div class="alert alert-success">
+            {{mess}}
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% block mess_section %}
+      {% endblock %}
+    </div>
+    <div class="container-fluid">
+      {% block balans_section %}
+      {% endblock %}
+    </div>
+
+
+      {% block charts %}
+      {% endblock %}
+
+
+</body>
+</html>

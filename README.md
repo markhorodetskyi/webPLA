@@ -1,1 +1,2 @@
 # webPLA
+new django project

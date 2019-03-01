@@ -1,0 +1,203 @@
+{% extends 'user/dashboardTemp.html'%}
+{% load user_tags %}
+<!-- {% if perms.user.view_street %}
+    <h1>Good Work</h1>
+{% else %}
+    <h1>Fail</h1>
+{% endif %} -->
+
+<!-- {% if request.user|has_group:"abon" %}
+  <h1>Good Work</h1>
+{% else %}
+    <h1>Fail</h1>
+{% endif %} -->
+
+{% block main_section %}
+  {% if request.user|has_group:"abon" %}
+    <div class="row">
+      <div class="col-md-auto">
+        <div class="form-section">
+          <!-- {% for i in abonent %}
+          <h5>{{ i.sur_name }} {{ i.first_name }} {{ i.last_name }}</h5>
+          <h5>вул.{% for a in adress %}{{ a.street }}  буд.{{ a.number }}{% endfor %} кв:{{ i.apartament }}</h5>
+          {% endfor %} -->
+          <h5>Особовий рахунок: {{usersid}}</h5>
+        </div>
+      </div>
+      <div class="col-md-auto">
+        <div class="form-section">
+          <h4>Тариф:</h4>
+          <p></p>
+          <h5>перших 100кВт/год - 0,9грн</h5>
+          <h5>понад 100кВт/год - 1,68грн</h5>
+        </div>
+      </div>
+      <div class="col-md-auto">
+        <div class="form-section">
+          <h4>Останній зафіксований показник:</h4>
+          <p></p>
+          <h5>356,26 кВт/год</h5>
+          <h3>Баланс: {{balans_sum.saldo__sum|floatformat:"3"}} грн</h3>
+
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  {% if request.user|has_group:"comercial" %}
+
+  {% endif %}
+  {% if request.user|has_group:"admin" %}
+
+  {% endif %}
+{% endblock main_section %}
+{% block charts %}
+  {% if request.user|has_group:"abon" %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" type="text/javascript"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+            labels: ['Січ', 'Лют', 'Бер', 'Кві', 'Тра', 'Чер', 'Лип', 'Сер', 'Вер', 'Жов', 'Лис', 'Гру', 'Січ'],
+            datasets: [{
+              label: '2017',
+              fill: false,
+              borderColor: "rgb(255, 97, 97)",
+              backgroundColor: "rgb(255, 97, 97)",
+              pointStrokeColor: "#fff",
+              pointHighlightFill: "#fff",
+              pointHighlightStroke: "rgba(220,220,220,1)",
+              data: [0, 0, 0, 0, 0, {% for i in history reversed %}
+                                      {{ i.different|floatformat:"0" }},
+                                    {% endfor %}],
+              yAxisID: 'y-axis-1',
+            }, {
+              label: '2018',
+              fill: false,
+              borderColor: "rgb(64, 44, 245)",
+              backgroundColor: "rgb(64, 44, 245)",
+              pointStrokeColor: "#fff",
+              pointHighlightFill: "#fff",
+              pointHighlightStroke: "rgba(220,220,220,1)",
+              data: [{% for i in history reversed %}
+                        {% if forloop.counter > 7 %}
+                          {{ i.different|floatformat:"0" }},
+                        {% endif %}
+                    {% endfor %}],
+              yAxisID: 'y-axis-2'
+            }]
+
+      },
+      options: {responsive: true,
+                hoverMode: 'index',
+                stacked: false,
+                title: {
+                  display: true,
+                  text: 'Графік споживання'
+                },
+                scales: {
+                  yAxes: [{
+                    type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                    display: true,
+                    position: 'left',
+                    id: 'y-axis-1',
+                  }, {
+                    type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                    display: true,
+                    position: 'right',
+                    id: 'y-axis-2',
+
+                    // grid line settings
+                    gridLines: {
+                      drawOnChartArea: false, // only want the grid lines for one axis to show up
+                    },
+                  }],
+                }}
+    });
+    </script>
+  {% endif %}
+  {% if request.user|has_group:"comercial" %}
+
+  {% endif %}
+  {% if request.user|has_group:"admin" %}
+
+  {% endif %}
+{% endblock charts%}
+{% block content %}
+  {% if request.user|has_group:"abon" %}
+    <div class="row">
+      <div class="col-md-12">
+        <canvas id="myChart" height="25%" width="100%" class="chartjs-render-monitor" style="display: block;"></canvas>
+      </div>
+    </div>
+  {% endif %}
+  {% if request.user|has_group:"comercial" %}
+
+  {% endif %}
+{% endblock content %}
+{% block balans_section %}
+  {% if request.user|has_group:"abon" %}
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-auto col-xl-auto">
+        <div class="span3">
+          <table class="table table-striped">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Дата</th>
+                <th scope="col">Поч.показник</th>
+                <th scope="col">Кін.показник</th>
+                <th scope="col">кВт</th>
+                <th scope="col">ГРН</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in history %}
+              <tr>
+                <td>{{i.date|date:'M.y'}}</td>
+                <td>{{i.pokaz1}}</td>
+                <td>{{i.pokaz2}}</td>
+                <td>{{i.different|floatformat:"3"}}</td>
+                <td>{{i.uah|floatformat:"3"}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-auto col-xl-auto">
+        <div class="span3">
+          <table class="table table-striped">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Баланс</th>
+                <th scope="col">Дата</th>
+                <th scope="col">Коментар</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in balans %}
+              <tr>
+                <td>{{i.saldo|floatformat:"3"}}</td>
+                {% if i.comment == 'Нарахування' %}
+                  <td>{{i.date|date:'F'}}</td>
+                {% endif %}
+                {% if i.comment != 'Нарахування' %}
+                  <td>{{i.date}}</td>
+                {% endif %}
+                <td>{{i.comment}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  {% if request.user|has_group:"comercial" %}
+
+  {% endif %}
+  {% if request.user|has_group:"admin" %}
+
+  {% endif %}
+{% endblock balans_section %}

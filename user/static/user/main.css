@@ -1,0 +1,129 @@
+body{
+  background: #ffffff
+}
+
+.alert-light{
+   border-color: #bfbfbf
+}
+
+.form-section {
+  background: #343a40;
+  padding: 10px;
+  margin: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  -webkit-box-shadow: 0 8px 10px 0 rgba(74,74,74,.21);
+  -moz-box-shadow: 0 8px 10px 0 rgba(74,74,74,.21);
+  box-shadow: 0 8px 10px 0 rgba(74,74,74,.21);
+  border-radius: 20px;
+}
+
+.divCharts{
+  height: 400px;
+  width: 50%;
+
+}
+
+.form-section > h5{
+  color: #fff;
+  margin-bottom: 5px;
+}
+.form-section > h4{
+  color: #fff;
+  margin-bottom: 5px;
+}
+.form-section > h3{
+  color: #fff;
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+}
+
+table{
+  padding: 20px
+}
+
+.span3 {
+  padding: 10px;
+  width: 100%;
+  height: 300px !important;
+  overflow-y: scroll;
+}​
+
+
+
+
+
+
+/* helpers/align.css */
+
+.align {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* layout/base.css */
+
+:root {
+  --bodyFontFamily: sans-serif;
+  --bodyLineHeight: 1.5;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  font-family: var(--bodyFontFamily);
+  line-height: var(--bodyLineHeight);
+  margin: 0;
+  min-height: 100%;
+}
+
+/* modules/chart.css */
+
+:root {
+  --chartMarginBottom: 1.5rem;
+
+  --chartAxisColor: #e6edf4;
+  --chartAxisFontSize: 0.625rem;
+  --chartAxisStrokeWidth: 0.125rem;
+
+  --chartLineColor: #4682b4;
+  --chartLineStrokeWidth: 0.125rem;
+}
+
+.chart {
+  margin-bottom: var(--chartMarginBottom);
+}
+
+.chart__axis {
+  font-size: var(--chartAxisFontSize);
+}
+
+.chart__axis path,
+.chart__axis line {
+  fill: none;
+  stroke: var(--chartAxisColor);
+  stroke-width: var(--chartAxisStrokeWidth);
+}
+
+.chart__line {
+  fill: none;
+  stroke: var(--chartLineColor);
+  stroke-width: var(--chartLineStrokeWidth);
+}
+
+/* image.css */
+
+svg {
+  height: auto;
+  max-width: 100%;
+  vertical-align: middle;
+}
