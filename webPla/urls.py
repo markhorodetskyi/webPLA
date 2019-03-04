@@ -10,7 +10,7 @@ urlpatterns = [
     path('exit/', authViews.LogoutView.as_view(template_name='user/exit.html'), name='exit'),
     path('admin/', admin.site.urls, name='admin'),
     path('dashboard/', userViews.ShowDashboard.as_view(template_name='user/dashboard.html'), name='dashboard'),
-    path('forms/', userViews.ShowDashboard._form_view, name='user'),
+    # path('forms/', userViews.ShowDashboard._form_view, name='user'),
     # path('dashboardC/', userViews.ShowDashboardC.as_view(template_name='user/dashboard.html'), name='dashboardC'),
     path('password/', userViews.change_password, name='change_password'),
 

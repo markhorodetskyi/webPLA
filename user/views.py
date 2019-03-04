@@ -1,14 +1,14 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.views.generic import ListView, DeleteView, CreateView, UpdateView
+from django.views.generic import ListView, DeleteView, CreateView, UpdateView, FormView
 from django.db.models import Sum, Count
 from .models import User, balans, spozHistory, Private_abonent, House, Comercial, gadget_hw, gadget_HW_meter, gadget_HW_meter_max_dem_h, meterDataPrivate
 from django.http import JsonResponse
 import datetime
 from calendar import monthrange
-from .forms import UserMeterDate, ContactForm
+from .forms import UserMeterDate
 
 
 # def profile_balance(request):
@@ -98,21 +98,41 @@ def change_password(request):
 
 
 
-class ShowDashboard(ListView):
+class ShowDashboard(ListView, FormView):
 
-    def _form_view(request, template_name='user/includes/forms.html', form_class=ContactForm):
-        if request.method == 'POST':
-            form = form_class(request.POST)
-            if form.is_valid():
-                pass  # does nothing, just trigger the validation
-        else:
-            form = form_class()
-        return render(request, template_name, {'form': form})
 
     model = balans
+    form_class = UserMeterDate
     template_name = 'user/dashboard.html'
     ordering = ['-date']
 
+
+
+    def get_initial(self):
+        now = datetime.date.today()
+        date=now.strftime("%Y-%m")+'-01'
+        initial = super(ShowDashboard, self).get_initial()
+        lastPokaz = meterDataPrivate.objects.filter(account=self.request.user.username, date='2019-02-01').values('pokazT0')
+        if self.request.user.is_authenticated:
+            initial.update({'account': self.request.user.username,
+                            'pokazT0':lastPokaz[0]['pokazT0'],
+                            'date': date })
+        return initial
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        form.instance.save()
+        return redirect('dashboard')
+
+    # def _form_view(request, template_name='user/includes/forms.html', form_class=ContactForm):
+    #     if request.method == 'POST':
+    #         form = form_class(request.POST)
+    #         if form.is_valid():
+    #             pass  # does nothing, just trigger the validation
+    #         else:
+    #             form = form_class()
+    #             return render(request, template_name, {'form': form})
 
     def get_context_data(self, **kwards):
 
@@ -133,10 +153,12 @@ class ShowDashboard(ListView):
             meterDate = gadget_HW_meter.objects.filter(gadget_HW_id_id='2').values("meterDate")
             kwh = []
             kwhM = []
-            now = datetime.date.today()
-            date=now.strftime("%y%m")+'0108'
+
             for i in diff:
                 kwh.append((i['kWh'], i['meterDate']))
+
+            now = datetime.date.today()
+            date=now.strftime("%y%m")+'0108'
 
             Max=0
             Min=9999999999
