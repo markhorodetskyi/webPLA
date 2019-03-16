@@ -1,20 +1,17 @@
-from django.forms import ModelForm, DateInput, HiddenInput
+from django.forms import ModelForm, DateInput, HiddenInput, CharField
+from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import meterDataPrivate
 
 class UserMeterDate(ModelForm):
+
     class Meta:
         model = meterDataPrivate
         fields = ['account', 'pokazT0', 'date']
-
-        def clean(self):
-            cleaned_data = super(UserMeterDate, self).clean()
-            pokazT0 = cleaned_data.get('pokazT0')
-            if not pokazT0:
-                raise forms.ValidationError('You have to write something!')
         widgets = {'account': HiddenInput(),
                    'date': HiddenInput()}
+        help_text = {'pokazT0':'Показник не може відрізнятись більше ніж на десять одиниць',}
 
 
 # class ContactForm(form):

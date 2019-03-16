@@ -43,19 +43,19 @@
       {% endblock %}
     </div>
     <div class="container-fluid">
-      {% block content %}
-      {% endblock content %}
-    </div>
-    <div class="container-fluid">
       {% if messages %}
-        {% for mess in messages %}
-          <div class="alert alert-success">
-            {{mess}}
-          </div>
-        {% endfor %}
+      {% for mess in messages %}
+      <div class="alert alert-success">
+        {{mess}}
+      </div>
+      {% endfor %}
       {% endif %}
       {% block mess_section %}
       {% endblock %}
+    </div>
+    <div class="container-fluid">
+      {% block content %}
+      {% endblock content %}
     </div>
     <div class="container-fluid">
       {% block balans_section %}
