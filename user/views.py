@@ -109,20 +109,41 @@ class ShowDashboard(ListView, FormView):
 
 
     def get_initial(self):
-        now = datetime.date.today()
-        date=now.strftime("%Y-%m")+'-01'
-        initial = super(ShowDashboard, self).get_initial()
-        lastPokaz = meterDataPrivate.objects.filter(account=self.request.user.username, date='2019-02-01').values('pokazT0')
-        if self.request.user.is_authenticated:
-            initial.update({'account': self.request.user.username,
-                            'pokazT0':lastPokaz[0]['pokazT0'],
-                            'date': date })
-        return initial
+        if self.request.user.is_staff == False:
+            now = datetime.date.today()
+            date=now.strftime("%Y-%m")+'-01'
+            initial = super(ShowDashboard, self).get_initial()
+            lastPokaz = meterDataPrivate.objects.filter(account=self.request.user.username, date='2019-02-01').values('pokazT0')
+            if self.request.user.is_authenticated:
+                initial.update({'account': self.request.user.username,
+                                'pokazT0':lastPokaz[0]['pokazT0'],
+                                'date': date })
+            return initial
+
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        form.instance.save()
+        pokazT0=form.cleaned_data['pokazT0']
+        lastPokaz = meterDataPrivate.objects.filter(account=self.request.user.username, date='2019-02-01').values('pokazT0')
+        if(pokazT0<lastPokaz[0]['pokazT0']+10 and pokazT0>lastPokaz[0]['pokazT0']-10):
+            form.instance.save()
+            return redirect('dashboard')
+        else:
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        pokazT0=form.cleaned_data['pokazT0']
+        lastPokaz = meterDataPrivate.objects.filter(account=self.request.user.username, date='2019-02-01').values('pokazT0')
+        if(pokazT0>lastPokaz[0]['pokazT0']+10 or pokazT0<lastPokaz[0]['pokazT0']-10):
+            messages.info(self.request, "Дані не були надіслані! Показник не може відрізнятись більше ніж на 10 одиниць")
+        else:
+            messages.info(self.request, "--->"+str(lastPokaz[0]['pokazT0']+10))
         return redirect('dashboard')
 
     # def _form_view(request, template_name='user/includes/forms.html', form_class=ContactForm):

@@ -45,6 +45,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djangobower',
+]
+
+BOWER_INSTALLED_APPS = (
+    'chart.js',
+    'jquery#2',
+    'underscore',
+)
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'djangobower.finders.BowerFinder',
 ]
 
 MIDDLEWARE = [
@@ -136,3 +149,4 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'my_redirect'
 lOGIN_URL = 'login'
+BOWER_COMPONENTS_ROOT = '/Program Files/Work/PLA/vpla/webPLA/user/static/'
