@@ -8,9 +8,9 @@ class UserMeterDate(ModelForm):
 
     class Meta:
         model = meterDataPrivate
-        fields = ['account', 'pokazT0', 'date']
-        widgets = {'account': HiddenInput(),
-                   'date': HiddenInput()}
+        fields = ['account', 'pokazT0', 'date', 'comment']
+        # widgets = {'account': HiddenInput(),
+        #            'date': HiddenInput()}
         help_text = {'pokazT0':'Показник не може відрізнятись більше ніж на десять одиниць',}
 
 

@@ -423,7 +423,7 @@ for i in abon:
         cell = ws['C12']
         cell.value = c[4]
 
-        if(c[4]>100):
+        if(c[4]>limit):
             first_price = limit*0.9
             second_price = c[5]-first_price
 
@@ -451,11 +451,11 @@ for i in abon:
         for d in balans:
             if(d[2]=='Пільга' and str(d[3])==privilege_date):
                 privilege = d[1]
-                print(d[4])
+                # print(d[4])
         for d in balans:
             if(d[2]=='Субсидії' and str(d[3])==privilege_date):
                 subsidy = d[1]
-                print(d[4])
+                # print(d[4])
         debt = saldo + c[5] - privilege - subsidy
 
         if(debt<0):
@@ -479,11 +479,10 @@ for i in abon:
         else:
             cell = ws['J15']
             cell.value = '0.00'
-        if(debt<1 and debt>(-1)):
-            print(debt)
+        if(saldo<1 or saldo>(-1)):
             std=wb.get_sheet_by_name(i[0])
             wb.remove_sheet(std)
 
 # check_name='D:\Program Files\Work\girpromenergo\checks\\'+str(i[0])+'_'+monthAgo+'.xlsx'
-check_name='D:\Program Files\Work\girpromenergo\checks\\'+monthAgo+'_toPrint.xlsx'
+check_name='D:\Program Files\Work\girpromenergo\checks\\'+monthAgo+'_toPrint_new.xlsx'
 wb.save(check_name)
