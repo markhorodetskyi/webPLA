@@ -104,7 +104,7 @@ class meterDataPrivate(models.Model):
     pokazT2 = models.FloatField(verbose_name = "показник", default='0.0')
     pokazT3 = models.FloatField(verbose_name = "показник", default='0.0')
     date = models.DateField(verbose_name = "Дата", auto_now=False, auto_now_add=False)
-    comment = models.CharField(max_length=100, verbose_name='Джерело')
+    comment = models.CharField(max_length=100, null=True, verbose_name='Джерело')
     class Meta:
         ordering = ["-date"]
     def __str__(self):

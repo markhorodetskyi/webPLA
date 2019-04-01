@@ -13,7 +13,7 @@ urlpatterns = [
     # path('forms/', userViews.ShowDashboard._form_view, name='user'),
     # path('dashboardC/', userViews.ShowDashboardC.as_view(template_name='user/dashboard.html'), name='dashboardC'),
     path('password/', userViews.change_password, name='change_password'),
-
+    path('password/', userViews.change_password, name='change_password'),
     path('enter/', userViews.my_redirect, name='my_redirect'),
 
 ]

@@ -49,10 +49,10 @@ def change_password(request):
             messages.success(request, 'Ваш пароль успішно змінено!')
             return redirect('change_password')
         else:
-            messages.error(request, 'Будь-ласка, виправте помилкуІ.')
+            messages.error(request, 'Будь-ласка, виправте помилку.')
     else:
         form = PasswordChangeForm(request.user)
-    return render(request, 'user/change_password.html', {
+    return render(request, 'user/profile.html', {
         'form': form
     })
 
@@ -106,18 +106,17 @@ class ShowDashboard(ListView, FormView):
     template_name = 'user/dashboard.html'
     ordering = ['-date']
 
-
-
     def get_initial(self):
         if self.request.user.is_staff == False:
             now = datetime.date.today()
             date=now.strftime("%Y-%m")+'-01'
             initial = super(ShowDashboard, self).get_initial()
-            lastPokaz = meterDataPrivate.objects.filter(account=self.request.user.username, date='2019-02-01').values('pokazT0')
+            lastPokaz = meterDataPrivate.objects.filter(account=self.request.user.username, date=date).values('pokazT0')
             if self.request.user.is_authenticated:
                 initial.update({'account': self.request.user.username,
                                 'pokazT0':lastPokaz[0]['pokazT0'],
-                                'date': date })
+                                'date': date,
+                                'comment': 'abonent' })
             return initial
 
     def post(self, request, *args, **kwargs):
@@ -129,8 +128,10 @@ class ShowDashboard(ListView, FormView):
             return self.form_invalid(form)
 
     def form_valid(self, form):
+        now = datetime.date.today()
+        date=now.strftime("%Y-%m")+'-01'
         pokazT0=form.cleaned_data['pokazT0']
-        lastPokaz = meterDataPrivate.objects.filter(account=self.request.user.username, date='2019-02-01').values('pokazT0')
+        lastPokaz = meterDataPrivate.objects.filter(account=self.request.user.username, date=date).values('pokazT0')
         if(pokazT0<lastPokaz[0]['pokazT0']+10 and pokazT0>lastPokaz[0]['pokazT0']-10):
             form.instance.save()
             return redirect('dashboard')
@@ -189,7 +190,7 @@ class ShowDashboard(ListView, FormView):
             dayAverage=[]
             for i in range(len(kwh)):
                 strDate=str(kwh[i][1])
-                first = datetime.datetime.strptime(str(kwh[i][1]),'%y%m%d%H%M%S')
+                first = datetime.datetime.strptime(strDate,'%y%m%d%H%M%S')
                 second = first.strftime('%Y-%m-%d %H:%M:%S')
                 if(str(date)==strDate[0:8]):
                     Count=kwh[i][0]
