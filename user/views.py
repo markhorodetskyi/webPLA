@@ -8,7 +8,7 @@ from .models import User, balans, spozHistory, Private_abonent, House, Comercial
 from django.http import JsonResponse
 import datetime
 from calendar import monthrange
-from .forms import UserMeterDate
+from .forms import UserMeterDate, ChangeEmailForm
 
 
 # def profile_balance(request):
@@ -40,6 +40,7 @@ def my_redirect(request):
     elif request.user.is_superuser == True:
         return redirect('/dashboard/')
 
+@login_required
 def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
@@ -54,6 +55,42 @@ def change_password(request):
         form = PasswordChangeForm(request.user)
     return render(request, 'user/profile.html', {
         'form': form
+    })
+
+    form1 = ChangeEmailForm(request.POST or None)
+    if form.is_valid():
+        form.send_vcode(request, request.user)
+        return redirect('accounts:change_email_confirm')
+    return render(request, 'user/profile.html', {
+        'form1': form1,
+    })
+
+@login_required
+def change_email_view(request):
+    form = ChangeEmailForm(request.POST or None)
+    if form.is_valid():
+        form.send_vcode(request, request.user)
+        return redirect('accounts:change_email_confirm')
+    return render(request, 'user/profile.html', {
+        'form': form,
+    })
+
+
+@login_required
+def change_email_confirm_view(request, code):
+    status = 'waiting'
+    if code:
+        vcode = Vcode(request)
+        if vcode.is_valid(code, 'change_email'):
+            status = 'success'
+            user, data = vcode.get_content()
+            # меняем email
+            user.email = data['email']
+            user.save()
+        else:
+            status = 'invalid'
+    return render(request, 'accounts/change_email_confirm.html', {
+        'status': status,
     })
 
 
@@ -109,7 +146,7 @@ class ShowDashboard(ListView, FormView):
     def get_initial(self):
         if self.request.user.is_staff == False:
             now = datetime.date.today()
-            date=now.strftime("%Y-%m")+'-01'
+            date=str(now.strftime("%Y-%m")+'-01')
             initial = super(ShowDashboard, self).get_initial()
             lastPokaz = meterDataPrivate.objects.filter(account=self.request.user.username, date=date).values('pokazT0')
             if self.request.user.is_authenticated:
@@ -159,7 +196,15 @@ class ShowDashboard(ListView, FormView):
     def get_context_data(self, **kwards):
 
         if self.request.user.is_staff == False:
+            now = datetime.date.today()
+            date=str(now.strftime("%Y-%m")+'-01')
+            dateM=str(now.strftime("%Y-%m")+'-01')
+            if int(now.strftime("%Y%m%d")) > int(str(now.strftime("%Y%m")+'06')) or meterDataPrivate.objects.filter(account=self.request.user.username, date=date, comment='abonent').values('pokazT0'):
+                shadowForm = False
+            else:
+                shadowForm = True
             house = Private_abonent.objects.filter(account=self.request.user).values('house_number')
+            lastPokaz = meterDataPrivate.objects.filter(account=self.request.user.username, date=date).values('pokazT0')
             ctx = super(ShowDashboard, self).get_context_data(**kwards)
             ctx['title'] = self.request.user
             ctx['usersid'] = self.request.user
@@ -168,6 +213,14 @@ class ShowDashboard(ListView, FormView):
             ctx['balans'] = balans.objects.filter(account=self.request.user).values('saldo', 'date', 'comment')
             ctx['balans_sum'] = balans.objects.filter(account=self.request.user).aggregate(Sum('saldo'))
             ctx['history'] = spozHistory.objects.filter(account=self.request.user).values('date', 'pokaz1', 'pokaz2','different', 'uah')
+
+            if meterDataPrivate.objects.filter(account=self.request.user.username, date=date, comment='abonent').values('pokazT0'):
+                ctx['lastPokaz'] = meterDataPrivate.objects.filter(account=self.request.user.username, date=date, comment='abonent').values('pokazT0')
+            else:
+                ctx['lastPokaz'] = meterDataPrivate.objects.filter(account=self.request.user.username, date=date).values('pokazT0')
+            ctx['shadowForm'] = shadowForm
+            ctx['date'] = dateM
+
             return ctx
 
         elif self.request.user.is_staff == True:
